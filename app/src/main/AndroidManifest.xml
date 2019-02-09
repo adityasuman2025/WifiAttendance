@@ -13,11 +13,17 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewFragment"></activity>
-        <activity android:name=".Register" />
+
+        <activity android:name=".ManageCourse"
+            android:label="Manage Courses"/>
+
+        <activity android:name=".Register"
+            android:label="Register" />
+
         <activity
             android:name=".Dashboard"
-            android:label="@string/title_activity_dashboard" />
+            android:label="Professor Dashboard" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
