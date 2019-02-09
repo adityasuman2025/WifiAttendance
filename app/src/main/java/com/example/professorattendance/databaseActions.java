@@ -427,6 +427,7 @@ public class databaseActions extends AsyncTask<String,Void,String>
             try
             {
                 String course_id_to_delete = params[1];
+                String prof_id = params[2];
 
                 //connecting with server
                 url = new URL(login_url);
@@ -440,7 +441,9 @@ public class databaseActions extends AsyncTask<String,Void,String>
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                String post_data = URLEncoder.encode("course_id","UTF-8")+"="+URLEncoder.encode(course_id_to_delete,"UTF-8");
+                String post_data = URLEncoder.encode("course_id","UTF-8")+"="+URLEncoder.encode(course_id_to_delete,"UTF-8") +
+                        "&" + URLEncoder.encode("prof_id","UTF-8")+"="+URLEncoder.encode(prof_id,"UTF-8");
+
 
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();

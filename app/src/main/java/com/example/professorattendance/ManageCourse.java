@@ -194,7 +194,7 @@ public class ManageCourse extends AppCompatActivity {
                                 try
                                 {
                                     type = "delete_course_id_from_prof_courses";
-                                    String delete_course_id_from_student_coursesResult = (new databaseActions().execute(type, course_id_to_delete).get());
+                                    String delete_course_id_from_student_coursesResult = (new databaseActions().execute(type, course_id_to_delete, user_id_cookie).get());
 
                                     if(delete_course_id_from_student_coursesResult.equals("1"))
                                     {
