@@ -16,7 +16,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class databaseActions extends AsyncTask<String,Void,String>
+public class DatabaseActions extends AsyncTask<String,Void,String>
 {
     String base_url = "http://mngo.in/qr_attendance/";
 

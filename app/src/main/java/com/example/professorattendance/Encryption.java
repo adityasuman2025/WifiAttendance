@@ -2,12 +2,12 @@ package com.example.professorattendance;
 
 import android.util.Base64;
 
-public class encryption
+public class Encryption
 {
 //function for encrypting and decrypting the text
     public static String encrypt(String input)
     {
-        // This is base64 encoding, which is not an encryption
+        // This is base64 encoding, which is not an Encryption
         return Base64.encodeToString(input.getBytes(), Base64.DEFAULT);
     }
 

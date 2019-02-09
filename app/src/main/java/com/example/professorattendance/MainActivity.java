@@ -74,14 +74,14 @@ public class MainActivity extends AppCompatActivity
                     //trying to login the user
                     try
                     {
-                        int login_result = Integer.parseInt(new databaseActions().execute(type, username, password).get());
+                        int login_result = Integer.parseInt(new DatabaseActions().execute(type, username, password).get());
 
                         if(login_result > 0)
                         {
                             //creating cookie of the logged in user
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("username", new encryption().encrypt(username));
-                            editor.putString("user_id", new encryption().encrypt(Integer.toString(login_result)));
+                            editor.putString("username", new Encryption().encrypt(username));
+                            editor.putString("user_id", new Encryption().encrypt(Integer.toString(login_result)));
                             editor.apply();
 
                             //redirecting the list course page

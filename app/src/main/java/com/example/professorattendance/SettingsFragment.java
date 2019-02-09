@@ -52,7 +52,7 @@ public class SettingsFragment extends Fragment
         String user_id_cookie = sharedPreferences.getString("user_id", "DNE");
         editor = sharedPreferences.edit();
 
-        String user_id = new encryption().decrypt(user_id_cookie);
+        String user_id = new Encryption().decrypt(user_id_cookie);
 
     //checking if phone if connected to net or not
         ConnectivityManager connMgr = (ConnectivityManager) getActivity()
@@ -65,7 +65,7 @@ public class SettingsFragment extends Fragment
             String studentDetailsResults = null;
             try {
                 String type = "get_prof_details";
-                studentDetailsResults = new databaseActions().execute(type, user_id).get();
+                studentDetailsResults = new DatabaseActions().execute(type, user_id).get();
 
                 //parse JSON and getting data
                 JSONArray ja = new JSONArray(studentDetailsResults);

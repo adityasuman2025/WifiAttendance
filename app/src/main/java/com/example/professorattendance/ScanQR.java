@@ -19,8 +19,6 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -88,7 +86,7 @@ public class ScanQR extends AppCompatActivity
                     try
                     {
                         type = "add_today_as_class_of_course";
-                        String add_today_as_class_of_courseResult = (new databaseActions().execute(type, course_id_cookie).get());
+                        String add_today_as_class_of_courseResult = (new DatabaseActions().execute(type, course_id_cookie).get());
 
                         if(add_today_as_class_of_courseResult.equals("1"))
                         {
@@ -139,7 +137,7 @@ public class ScanQR extends AppCompatActivity
                         try
                         {
                             type = "add_today_as_class_of_course";
-                            String add_today_as_class_of_courseResult = (new databaseActions().execute(type, course_id_cookie).get());
+                            String add_today_as_class_of_courseResult = (new DatabaseActions().execute(type, course_id_cookie).get());
 
                             if(add_today_as_class_of_courseResult.equals("1"))
                             {
@@ -199,7 +197,7 @@ public class ScanQR extends AppCompatActivity
     {
     //getting the content of scanner qr code
         final IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        String scanned_result = new encryption().decrypt(result.getContents());
+        String scanned_result = new Encryption().decrypt(result.getContents());
 
     //checking if phone if connected to net or not
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -236,7 +234,7 @@ public class ScanQR extends AppCompatActivity
                         //inserting this student attendance for this date for today in database
                             type = "insert_student_attendance_for_course_and_date";
 
-                            String insert_student_attendance_for_course_and_dateResult = (new databaseActions().execute(type, code_student_id, code_course_id).get());
+                            String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, code_student_id, code_course_id).get());
                             if(insert_student_attendance_for_course_and_dateResult.equals("1"))
                             {
                             //creating cookie of students present today for this course and adding this student in the cookie
@@ -260,7 +258,7 @@ public class ScanQR extends AppCompatActivity
                             //inserting this student attendance for this date for today in database
                                 type = "insert_student_attendance_for_course_and_date";
 
-                                String insert_student_attendance_for_course_and_dateResult = (new databaseActions().execute(type, code_student_id, code_course_id).get());
+                                String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, code_student_id, code_course_id).get());
                                 if(insert_student_attendance_for_course_and_dateResult.equals("1"))
                                 {
                                 //including this student attendance in the cookie

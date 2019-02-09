@@ -48,7 +48,7 @@ public class CoursesFragment extends Fragment
         String user_id_cookie = sharedPreferences.getString("user_id", "DNE");
         editor = sharedPreferences.edit();
 
-        final String user_id = new encryption().decrypt(user_id_cookie);
+        final String user_id = new Encryption().decrypt(user_id_cookie);
 
     //checking if phone if connected to net or not
         ConnectivityManager connMgr = (ConnectivityManager) getActivity()
@@ -61,7 +61,7 @@ public class CoursesFragment extends Fragment
             String type = "get_prof_courses";
             try
             {
-                String get_user_courses_result = (new databaseActions().execute(type, user_id).get());
+                String get_user_courses_result = (new DatabaseActions().execute(type, user_id).get());
 
                 if(!get_user_courses_result.equals("0") && !get_user_courses_result.equals("-1") && !get_user_courses_result.equals("Something went wrong"))
                 {

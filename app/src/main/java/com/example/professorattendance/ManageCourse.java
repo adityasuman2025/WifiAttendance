@@ -49,7 +49,7 @@ public class ManageCourse extends AppCompatActivity {
 
     //getting the info of the logged user
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-        final String user_id_cookie = new encryption().decrypt(sharedPreferences.getString("user_id", "DNE"));
+        final String user_id_cookie = new Encryption().decrypt(sharedPreferences.getString("user_id", "DNE"));
 
     //checking if phone if connected to net or not
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -61,7 +61,7 @@ public class ManageCourse extends AppCompatActivity {
             {
             //getting the list of all courses in the database
                 type = "get_courses";
-                String get_courseResults = new databaseActions().execute(type).get();
+                String get_courseResults = new DatabaseActions().execute(type).get();
 
                 if(get_courseResults != "0" && get_courseResults != "-1" && get_courseResults != "Something went wrong")
                 {
@@ -105,7 +105,7 @@ public class ManageCourse extends AppCompatActivity {
                                 String insert_student_courseResult = null;
                                 try
                                 {
-                                    insert_student_courseResult = new databaseActions().execute(type, user_id_cookie, course_id).get();
+                                    insert_student_courseResult = new DatabaseActions().execute(type, user_id_cookie, course_id).get();
                                     if(insert_student_courseResult.equals("1")) //if that course_id is successfully added
                                     {
                                     //reloading this activity
@@ -142,7 +142,7 @@ public class ManageCourse extends AppCompatActivity {
 
             //getting the list of all the courses of that student (to show in the list for deleting any course)
                 type = "get_prof_courses";
-                String get_user_courses_result = (new databaseActions().execute(type, user_id_cookie).get());
+                String get_user_courses_result = (new DatabaseActions().execute(type, user_id_cookie).get());
 
                 if(!get_user_courses_result.equals("0") && !get_user_courses_result.equals("-1") && !get_user_courses_result.equals("Something went wrong"))
                 {
@@ -194,7 +194,7 @@ public class ManageCourse extends AppCompatActivity {
                                 try
                                 {
                                     type = "delete_course_id_from_prof_courses";
-                                    String delete_course_id_from_student_coursesResult = (new databaseActions().execute(type, course_id_to_delete, user_id_cookie).get());
+                                    String delete_course_id_from_student_coursesResult = (new DatabaseActions().execute(type, course_id_to_delete, user_id_cookie).get());
 
                                     if(delete_course_id_from_student_coursesResult.equals("1"))
                                     {
