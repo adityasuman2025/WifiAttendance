@@ -109,7 +109,7 @@ public class Register extends AppCompatActivity
                                     }
                                     else
                                     {
-                                    //if everything fine then registering the new user in the databse
+                                    //if everything fine then registering the new user in the database
                                         type = "register_new_prof_in_db";
                                         int register_new_user_result = Integer.parseInt(new databaseActions().execute(type, reg_name, reg_email, reg_phone, reg_username, reg_pass, androidId, uniqueID).get());
 
@@ -123,8 +123,8 @@ public class Register extends AppCompatActivity
                                             editor.apply();
 
                                         //redirecting the prof dashboard page
-                                            Intent ListCourseIntent = new Intent(Register.this, Dashboard.class);
-                                            startActivity(ListCourseIntent);
+                                            Intent dashboardIntent = new Intent(Register.this, Dashboard.class);
+                                            startActivity(dashboardIntent);
                                             finish(); //used to delete the last activity history which we want to delete
                                         }
                                         else if (register_new_user_result == -1)

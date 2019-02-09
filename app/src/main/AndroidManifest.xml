@@ -13,7 +13,8 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Register"></activity>
+        <activity android:name=".ViewFragment"></activity>
+        <activity android:name=".Register" />
         <activity
             android:name=".Dashboard"
             android:label="@string/title_activity_dashboard" />

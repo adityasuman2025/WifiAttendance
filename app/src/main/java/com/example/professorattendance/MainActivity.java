@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity
         else //if someone is already logged in
         {
         //redirecting to the professor dashboard page
-//            Intent dashboardIntent = new Intent(MainActivity.this, Dashboard.class);
-//            startActivity(dashboardIntent);
-//            finish(); //used to delete the last activity history which we want to delete
+            Intent dashboardIntent = new Intent(MainActivity.this, Dashboard.class);
+            startActivity(dashboardIntent);
+            finish(); //used to delete the last activity history which we want to delete
         }
 
     //on clicking on login button
@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity
                             editor.apply();
 
                             //redirecting the list course page
-                            Intent ListCourseIntent = new Intent(MainActivity.this, Dashboard.class);
-                            startActivity(ListCourseIntent);
+                            Intent dashboardIntent = new Intent(MainActivity.this, Dashboard.class);
+                            startActivity(dashboardIntent);
                             finish(); //used to delete the last activity history which we want to delete
                         }
                         else if(login_result == -1)

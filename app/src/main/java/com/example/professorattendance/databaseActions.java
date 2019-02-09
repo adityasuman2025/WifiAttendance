@@ -184,8 +184,10 @@ public class databaseActions extends AsyncTask<String,Void,String>
                 String name = params[1];
                 String email = params[2];
                 String phone = params[3];
+
                 String username = params[4];
                 String password = params[5];
+
                 String androidId = params[6];
                 String uniqueID = params[7];
 
