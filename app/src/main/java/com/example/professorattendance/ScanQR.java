@@ -1,0 +1,248 @@
+package com.example.professorattendance;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
+
+public class ScanQR extends AppCompatActivity
+{
+//defining variables
+    TextView courseCode;
+    Button scan_btn;
+    TextView text_danger;
+    TextView text;
+
+    String course_id_cookie;
+    String type;
+    String formattedDate;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_scan_qr);
+
+        courseCode = findViewById(R.id.courseCode);
+        scan_btn = findViewById(R.id.scan_btn);
+        text_danger = findViewById(R.id.text_danger);
+        text = findViewById(R.id.text);
+
+    //to get the cookie values
+        sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        String course_code_cookie = sharedPreferences.getString("course_code", "");
+        course_id_cookie = sharedPreferences.getString("course_id", "DNE");
+        editor = sharedPreferences.edit();
+
+        courseCode.setText(course_code_cookie);
+
+    //getting the cookies of classes of courses for today
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        formattedDate = dateFormat.format(date);
+
+        final String today_is_class_of_courses = formattedDate + "__courses";
+
+        final String todays_classes_course_ids_cookie = sharedPreferences.getString(today_is_class_of_courses, "DNE");
+
+        if(todays_classes_course_ids_cookie.equals("DNE"))//no any class of any course has been added today
+        {
+        //asking prof if they want to mark today for class of this course
+            new AlertDialog.Builder(ScanQR.this)
+            .setTitle("Confirm Class")
+            .setCancelable(false) //to prevent closing of alertdialog box on pressing back button
+            .setMessage("Do you want to take attendance of today for this course")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    try
+                    {
+                        type = "add_today_as_class_of_course";
+                        String add_today_as_class_of_courseResult = (new databaseActions().execute(type, course_id_cookie).get());
+
+                        if(add_today_as_class_of_courseResult.equals("1"))
+                        {
+                        //creating cookie for today and adding this course in the todays_classes_course_ids_cookie
+                            String todays_courses = course_id_cookie + "!";
+                            editor.putString(today_is_class_of_courses, todays_courses);
+                            editor.apply();
+
+                        //reloading this activity
+                            finish();
+                            startActivity(getIntent());
+                        }
+                        else
+                        {
+                            text.setText("Something went wrong while adding today date as class of this course");
+                        }
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    dialogInterface.dismiss();
+                    finish();
+                }
+            }).create().show();
+        }
+        else//if class of some course has been added for today
+        {
+            if(!todays_classes_course_ids_cookie.contains(course_id_cookie + "!")) //if class of this course has not been added for today
+            {
+            //asking prof if they want to mark today for class of this course
+                new AlertDialog.Builder(ScanQR.this)
+                .setTitle("Confirm Class")
+                .setCancelable(false) //to prevent closing of alertdialog box on pressing back button
+                .setMessage("Do you want to take attendance of today for this course")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        try
+                        {
+                            type = "add_today_as_class_of_course";
+                            String add_today_as_class_of_courseResult = (new databaseActions().execute(type, course_id_cookie).get());
+
+                            if(add_today_as_class_of_courseResult.equals("1"))
+                            {
+                           //including this course in todays_classes_course_ids_cookie
+                                String todays_courses = todays_classes_course_ids_cookie + course_id_cookie + "!";
+                                editor.putString(today_is_class_of_courses, todays_courses);
+                                editor.apply();
+
+                            //reloading this activity
+                                finish();
+                                startActivity(getIntent());
+                            }
+                            else
+                            {
+                                text.setText("Something went wrong while adding today date as class of this course");
+                            }
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        finish();
+                        dialogInterface.dismiss();
+                    }
+                }).create().show();
+            }
+        }
+
+    //on clicking on scan button
+        scan_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                IntentIntegrator intentIntegrator = new IntentIntegrator(ScanQR.this);
+                intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+                intentIntegrator.setCameraId(0);
+                intentIntegrator.setOrientationLocked(false);
+                intentIntegrator.setPrompt("scanning");
+                intentIntegrator.setBeepEnabled(true);
+                intentIntegrator.setBarcodeImageEnabled(true);
+                intentIntegrator.initiateScan();
+            }
+        });
+    }
+
+//for getting results after scanning the qr code
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+    //getting the content of scanner qr code
+        final IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        String scanned_result = new encryption().decrypt(result.getContents());
+
+    //checking if phone if connected to net or not
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
+        {
+        //device is connected to internet
+            try
+            {
+                JSONArray js = new JSONArray(scanned_result);
+
+                String student_id = js.getString(0);
+                String course_id = js.getString(1);
+                String timestamps = js.getString(2);
+
+                text.setText("Student Id: " + student_id + "\nCourse Id: " + course_id + "\nTimestamps: " + timestamps);
+
+                if(!course_id.equals(course_id_cookie))//if scanned for wrong course
+                {
+                    text_danger.setText("This QR Code is not associated with the selected course");
+                }
+                else
+                {
+                //getting the cookie of student present for this courses for today
+                    final String today_students_present_for_this_course = formattedDate + "_date_" + course_id_cookie + "_course_present_students";
+
+                    final String today_students_present_for_this_course_cookie = sharedPreferences.getString(today_students_present_for_this_course, "DNE");
+
+                    type = "check_student_attendance_for_course_and_date";
+
+                    //to get current timestamps
+                    Long tsLong = System.currentTimeMillis()/1000;
+                    String ts = tsLong.toString();
+
+                    text_danger.setText(today_students_present_for_this_course_cookie);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            text_danger.setText("Internet connection is not available");
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+}

@@ -100,8 +100,6 @@ public class ManageCourse extends AppCompatActivity {
                         //inserting that course_id in the professor_course table in the database
                             type = "insert_prof_course_in_db";
 
-                            text.setText(course_id);
-
                             if(course_id !="" && course_id != "0")
                             {
                                 String insert_student_courseResult = null;

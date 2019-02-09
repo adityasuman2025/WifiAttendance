@@ -12,7 +12,7 @@
         android:textAlignment="center"
         android:padding="20px"
         android:textSize="60px"
-        android:text="Your Registered Courses"
+        android:text="Your Courses"
         android:textColor="@color/white"
         android:background="@color/colorAccent"
         />
