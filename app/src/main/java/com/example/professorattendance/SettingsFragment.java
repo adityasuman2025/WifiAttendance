@@ -106,16 +106,12 @@ public class SettingsFragment extends Fragment
 
                 if(listViewText.equals(data[0])) //MANAGE COURSES
                 {
-                    text.setText("manage courses");
-
-                //redirecting to the manage course page
+                //redirecting to the manage courses page
                     Intent manageCoursePage = new Intent(getActivity().getApplicationContext(), ManageCourse.class);
                     startActivity(manageCoursePage);
                 }
                 else if(listViewText.equals(data[1])) //logout
                 {
-                    text.setText("logout");
-
                 //removing all cookies
                     editor.remove("user_id");
                     editor.remove("username");

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Register">
+    tools:context=".CreateCourse">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,70 +11,78 @@
         android:orientation="vertical"
         >
         <EditText
-            android:id="@+id/reg_name_input"
+            android:id="@+id/courseCodeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="150px"
             android:ems="10"
-            android:hint="Name"
+            android:hint="Course Code"
             android:inputType="textPersonName"
             android:layout_margin="10px"
             />
 
         <EditText
-            android:id="@+id/reg_email_input"
+            android:id="@+id/courseNameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="150px"
             android:ems="10"
-            android:hint="Email ID"
-            android:inputType="textEmailAddress"
+            android:hint="Course Name"
+            android:inputType="textPersonName"
             android:layout_margin="10px"
             />
 
         <EditText
-            android:id="@+id/reg_phone_input"
+            android:id="@+id/degreeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="150px"
             android:ems="10"
-            android:hint="Phone Number"
+            android:hint="Degree"
             android:inputType="number"
             android:layout_margin="10px"
             />
 
-        <EditText
-            android:id="@+id/reg_username_input"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Username"
-            android:inputType="textPersonName"
-            android:layout_margin="10px"
-            />
+            android:textAlignment="center"
+            android:text="1: BTech, 2: MTech, 3: MSc, 4: Ph.D 5: Other"/>
 
         <EditText
-            android:id="@+id/reg_pass_input"
+            android:id="@+id/departmentInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:layout_margin="10px"
-            />
-
-        <EditText
-            android:id="@+id/reg_con_pass_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Confirm Password"
-            android:inputType="textPassword"
+            android:hint="Department"
+            android:inputType="number"
             android:layout_margin="10px"
             />
 
         <TextView
-            android:id="@+id/reg_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="Type 1: CSE, 2: EE, 3: ME, 4: CE, 5: CHE, 6: Other"/>
+
+        <EditText
+            android:id="@+id/courseFromInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Course From Date"
+            android:inputType="date" />
+
+        <EditText
+            android:id="@+id/courseToInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Course To Date"
+            android:inputType="date" />
+
+        <TextView
+            android:id="@+id/feed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10px"
@@ -83,15 +91,15 @@
             />
 
         <Button
-            android:id="@+id/reg_new_btn"
+            android:id="@+id/add_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Register"
             android:background="@color/colorAccent"
             android:textColor="@color/white"
             android:layout_margin="10px"
+
             android:layout_gravity="center"/>
 
     </LinearLayout>
-
 </ScrollView>

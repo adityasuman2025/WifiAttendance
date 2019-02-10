@@ -9,14 +9,14 @@
 
     <ImageView
         android:id="@+id/student_icon"
-        android:layout_width="150px"
-        android:layout_height="150px"
+        android:layout_width="120px"
+        android:layout_height="120px"
         app:srcCompat="@drawable/student_icon" />
 
     <LinearLayout
         android:id="@+id/stud_details"
         android:layout_width="wrap_content"
-        android:layout_height="200px"
+        android:layout_height="150px"
 
         android:layout_toEndOf="@id/student_icon"
         android:layout_toRightOf="@id/student_icon"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Roll No"
             android:textStyle="bold"
-            android:textSize="55px"
+            android:textSize="50px"
             android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
@@ -38,23 +38,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="name"
-            android:textSize="50px"
-            android:padding="0px"
-            />
+            android:textSize="45px"/>
     </LinearLayout>
 
     <TextView
         android:id="@+id/stud_percent"
         android:layout_width="wrap_content"
-        android:layout_height="150px"
+        android:layout_height="120px"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:text="60%"
         android:textStyle="bold"
-        android:textSize="70px"
+        android:textSize="60px"
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
-        android:paddingTop="30px"
+        android:paddingTop="20px"
         android:paddingRight="15px"
         />
 </RelativeLayout>

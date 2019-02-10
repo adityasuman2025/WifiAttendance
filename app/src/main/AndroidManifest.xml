@@ -18,8 +18,11 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewStudentAttendance"
-            android:label="View Student Attendance"/>
+        <activity android:name=".CreateCourse"
+            android:label="Create Course" />
+        <activity
+            android:name=".ViewStudentAttendance"
+            android:label="View Student Attendance" />
         <activity
             android:name=".ScanQR"
             android:label="Scan QR" />
@@ -42,7 +45,7 @@
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
-            tools:replace="screenOrientation"></activity>
+            tools:replace="screenOrientation" />
     </application>
 
 </manifest>
