@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.professorattendance">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="com.android.hardware.camera.focus" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,22 +18,20 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ViewStudentAttendance"
+            android:label="View Student Attendance"/>
         <activity
             android:name=".ScanQR"
             android:label="Scan QR" />
-
         <activity
             android:name=".ManageCourse"
             android:label="Manage Courses" />
-
         <activity
             android:name=".Register"
             android:label="Register" />
-
         <activity
             android:name=".Dashboard"
             android:label="Professor Dashboard" />
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,11 +39,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name="com.journeyapps.barcodescanner.CaptureActivity"
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
-            tools:replace="screenOrientation" >
-        </activity>
+            tools:replace="screenOrientation"></activity>
     </application>
 
 </manifest>

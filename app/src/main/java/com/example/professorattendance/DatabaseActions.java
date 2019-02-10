@@ -579,6 +579,109 @@ public class DatabaseActions extends AsyncTask<String,Void,String>
                 e.printStackTrace();
             }
         }
+        else if(type.equals("get_students_attendance_for_a_course"))
+        {
+            String login_url = base_url + "get_students_attendance_for_a_course.php";
+            try
+            {
+                String course_id = params[1];
+
+                //connecting with server
+                url = new URL(login_url);
+                HttpURLConnection httpURLConnection = null;
+                httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                //sending data to the server
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+                String post_data = URLEncoder.encode("course_id","UTF-8")+"="+URLEncoder.encode(course_id,"UTF-8");
+
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                //getting the data coming from server
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                result="";
+                String line;
+
+                while((line = bufferedReader.readLine())!= null)
+                {
+                    result += (line);
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(type.equals("get_course_class_count"))
+        {
+            String login_url = base_url + "get_course_class_count.php";
+
+            try
+            {
+                String course_id = params[1];
+
+                //connecting with server
+                url = new URL(login_url);
+                HttpURLConnection httpURLConnection = null;
+                httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                //sending login info to the server
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+                String post_data = URLEncoder.encode("course_id","UTF-8")+"="+URLEncoder.encode(course_id,"UTF-8");
+
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                //getting the data coming from server after logging
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+
+                result="";
+                String line;
+
+                while((line = bufferedReader.readLine())!= null)
+                {
+                    result += (line);
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         //else if
 
         return result;
