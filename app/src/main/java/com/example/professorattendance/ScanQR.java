@@ -10,8 +10,12 @@ import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -40,6 +44,67 @@ public class ScanQR extends AppCompatActivity
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+
+    //to prevent going back from current window
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        LayoutInflater li = LayoutInflater.from(this);
+        View promptsView = li.inflate(R.layout.askpassword, null);
+
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView
+                .findViewById(R.id.askPasswordText);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setNegativeButton("Go",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                /** DO THE METHOD HERE WHEN PROCEED IS CLICKED*/
+                                String user_text = (userInput.getText()).toString();
+
+                                /** CHECK FOR USER'S INPUT **/
+                                if (user_text.equals("oeg"))
+                                {
+                                    Log.d(user_text, "HELLO THIS IS THE MESSAGE CAUGHT :)");
+                                }
+                                else{
+                                    Log.d(user_text,"string is empty");
+                                    String message = "The password you have entered is incorrect." + " \n \n" + "Please try again!";
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(ScanQR.this);
+                                    builder.setTitle("Error");
+                                    builder.setMessage(message);
+                                    builder.setPositiveButton("Cancel", null);
+                                    builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            //showDialog();
+                                        }
+                                    });
+                                    builder.create().show();
+                                }
+                            }
+                        })
+                .setPositiveButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.dismiss();
+                            }
+                        }
+                );
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -76,7 +141,7 @@ public class ScanQR extends AppCompatActivity
         //asking prof if they want to mark today for class of this course
             new AlertDialog.Builder(ScanQR.this)
             .setTitle("Confirm Class")
-            .setCancelable(false) //to prevent closing of alertdialog box on pressing back button
+            .setCancelable(false) //to prevent closing of alert dialog box on pressing back button
             .setMessage("Do you want to take attendance of today for this course")
             .setPositiveButton("Yes", new DialogInterface.OnClickListener()
             {

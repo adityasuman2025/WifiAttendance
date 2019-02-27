@@ -7,11 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 public class Dashboard extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener
 {
@@ -26,16 +23,11 @@ public class Dashboard extends AppCompatActivity implements BottomNavigationView
         activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
+    //to prevent going back from current window
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
             return false;
-    }
-
-    @Override
-    public void onAttachedToWindow() {
-        this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG );
-        super.onAttachedToWindow();
     }
 
     @Override
