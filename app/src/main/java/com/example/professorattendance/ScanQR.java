@@ -55,7 +55,7 @@ public class ScanQR extends AppCompatActivity
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setView(promptsView);
 
-        final EditText userInput = (EditText) promptsView
+        final EditText userInput = promptsView
                 .findViewById(R.id.askPasswordText);
 
         // set dialog message
@@ -63,28 +63,55 @@ public class ScanQR extends AppCompatActivity
                 .setCancelable(false)
                 .setNegativeButton("Go",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                /** DO THE METHOD HERE WHEN PROCEED IS CLICKED*/
-                                String user_text = (userInput.getText()).toString();
+                            public void onClick(DialogInterface dialog,int id)
+                            {
+                                String verify_password = (userInput.getText()).toString();
 
-                                /** CHECK FOR USER'S INPUT **/
-                                if (user_text.equals("oeg"))
+                                //getting the info of the logged user
+                                sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+                                String user_id_cookie = sharedPreferences.getString("user_id", "DNE");
+
+                                String user_id = new Encryption().decrypt(user_id_cookie);
+
+                                //checking if phone if connected to net or not
+                                ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                                if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
                                 {
-                                    Log.d(user_text, "HELLO THIS IS THE MESSAGE CAUGHT :)");
+                                    try
+                                    {
+                                        String type = "verify_password";
+                                        String verify_password_results = new DatabaseActions().execute(type, user_id, verify_password).get();
+
+                                        /** CHECK FOR USER'S INPUT **/
+                                        if (verify_password_results.equals("1"))
+                                        {
+                                           //redirecting to the manage courses page
+                                            Intent dashboardPage = new Intent(getApplicationContext(), Dashboard.class);
+                                            startActivity(dashboardPage);
+                                        }
+                                        else
+                                        {
+                                            String message = "The password you have entered is incorrect." + " \n \n" + "Please try again!";
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQR.this);
+                                            builder.setTitle("Error");
+                                            builder.setMessage(message);
+                                            builder.setPositiveButton("Ok", null);
+                                            builder.create().show();
+                                        }
+                                    } catch (ExecutionException e) {
+                                        e.printStackTrace();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                                else{
-                                    Log.d(user_text,"string is empty");
-                                    String message = "The password you have entered is incorrect." + " \n \n" + "Please try again!";
+                                else
+                                {
+                                    String message = "Internet Connection is not available.";
                                     AlertDialog.Builder builder = new AlertDialog.Builder(ScanQR.this);
                                     builder.setTitle("Error");
                                     builder.setMessage(message);
-                                    builder.setPositiveButton("Cancel", null);
-                                    builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            //showDialog();
-                                        }
-                                    });
+                                    builder.setPositiveButton("Ok", null);
                                     builder.create().show();
                                 }
                             }

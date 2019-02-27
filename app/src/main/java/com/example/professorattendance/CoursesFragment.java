@@ -1,6 +1,8 @@
 package com.example.professorattendance;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,6 +41,8 @@ public class CoursesFragment extends Fragment
     ListView courseListView;
     ArrayAdapter<String> adapter;
 
+    String user_id;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -52,7 +57,7 @@ public class CoursesFragment extends Fragment
         String user_id_cookie = sharedPreferences.getString("user_id", "DNE");
         editor = sharedPreferences.edit();
 
-        final String user_id = new Encryption().decrypt(user_id_cookie);
+        user_id = new Encryption().decrypt(user_id_cookie);
 
     //checking if phone if connected to net or not
         ConnectivityManager connMgr = (ConnectivityManager) getActivity()
@@ -149,9 +154,74 @@ public class CoursesFragment extends Fragment
                 editor.putString("course_code", course_code_cookie);
                 editor.apply();
 
-            //redirecting to the qr code generator page
-                Intent QRCodeGeneratorIntent = new Intent(getActivity().getApplicationContext(), ScanQR.class);
-                startActivity(QRCodeGeneratorIntent);
+            //asking for password before going to that course scanner
+                LayoutInflater li = LayoutInflater.from(getActivity());
+                View promptsView = li.inflate(R.layout.askpassword, null);
+
+                final EditText userInput = promptsView
+                        .findViewById(R.id.askPasswordText);
+
+                // set dialog message
+                new AlertDialog.Builder(getActivity())
+                        .setView(promptsView)
+                        .setCancelable(false)
+                        .setNegativeButton("Go",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id)
+                                    {
+                                        String verify_password = (userInput.getText()).toString();
+
+                                        ConnectivityManager connMgr = (ConnectivityManager) getActivity()
+                                                .getSystemService(Context.CONNECTIVITY_SERVICE);
+                                        final NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+                                        if(networkInfo != null && networkInfo.isConnected()) //phone is connected
+                                        {
+                                            try
+                                            {
+                                                String type = "verify_password";
+                                                String verify_password_results = new DatabaseActions().execute(type, user_id, verify_password).get();
+
+                                                /** CHECK FOR USER'S INPUT **/
+                                                if (verify_password_results.equals("1"))
+                                                {
+                                                    //redirecting to the qr code generator page
+                                                    Intent QRCodeGeneratorIntent = new Intent(getActivity().getApplicationContext(), ScanQR.class);
+                                                    startActivity(QRCodeGeneratorIntent);
+                                                }
+                                                else
+                                                {
+                                                    String message = "The password you have entered is incorrect." + " \n \n" + "Please try again!";
+                                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                                    builder.setTitle("Error");
+                                                    builder.setMessage(message);
+                                                    builder.setPositiveButton("Ok", null);
+                                                    builder.create().show();
+                                                }
+                                            } catch (ExecutionException e) {
+                                                e.printStackTrace();
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            String message = "Internet Connection is not available.";
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                            builder.setTitle("Error");
+                                            builder.setMessage(message);
+                                            builder.setPositiveButton("Ok", null);
+                                            builder.create().show();
+                                        }
+                                    }
+                                })
+                        .setPositiveButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.dismiss();
+                                    }
+                                }
+                        ).create().show();
             }
         });
 
