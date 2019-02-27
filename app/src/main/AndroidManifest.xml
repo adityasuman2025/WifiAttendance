@@ -4,12 +4,15 @@
     package="com.example.professorattendance">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature android:name="com.android.hardware.camera.focus" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"></uses-permission>
+
 
     <application
         android:allowBackup="true"
@@ -18,6 +21,7 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".CreateCourse"
             android:label="Create Course" />
         <activity
@@ -47,5 +51,4 @@
             android:screenOrientation="portrait"
             tools:replace="screenOrientation" />
     </application>
-
 </manifest>
