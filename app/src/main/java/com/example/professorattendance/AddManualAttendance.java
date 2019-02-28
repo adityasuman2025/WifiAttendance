@@ -246,7 +246,7 @@ public class AddManualAttendance extends AppCompatActivity
             try
             {
                 get_students_present_for_a_date_for_a_courseResults = (new DatabaseActions().execute(type, course_id_cookie, today).get());
-                
+
                 if(!get_students_present_for_a_date_for_a_courseResults.equals("0") && !get_students_present_for_a_date_for_a_courseResults.equals("-1") && !get_students_present_for_a_date_for_a_courseResults.equals("Something went wrong"))
                 {
                     //parse JSON data
@@ -266,7 +266,7 @@ public class AddManualAttendance extends AppCompatActivity
 
                     //listing courses in listview
                     adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roll_data1);
-                    presentStudentLV    .setAdapter(adapter1);
+                    presentStudentLV.setAdapter(adapter1);
                 }
             } catch (ExecutionException e) {
                 e.printStackTrace();
