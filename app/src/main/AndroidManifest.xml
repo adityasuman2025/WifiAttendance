@@ -20,8 +20,8 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DeleteAttendance"></activity>
-        <activity android:name=".AddManualAttendance" />
+        <activity android:name=".DeleteAttendance" android:label="Delete Attendance" />
+        <activity android:name=".AddManualAttendance" android:label="Add Attendance" />
         <activity
             android:name=".CreateCourse"
             android:label="Create Course" />

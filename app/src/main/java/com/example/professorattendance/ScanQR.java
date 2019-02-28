@@ -156,6 +156,8 @@ public class ScanQR extends AppCompatActivity
         editor = sharedPreferences.edit();
 
         user_id_cookie = sharedPreferences.getString("user_id", "DNE");
+        String user_id = new Encryption().decrypt(user_id_cookie);
+
         String course_code_cookie = sharedPreferences.getString("course_code", "");
         course_id_cookie = sharedPreferences.getString("course_id", "DNE");
 

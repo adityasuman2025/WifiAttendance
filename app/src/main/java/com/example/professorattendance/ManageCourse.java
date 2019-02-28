@@ -98,8 +98,6 @@ public class ManageCourse extends AppCompatActivity {
                         @Override
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
                         {
-//                            String selected = parentView.getItemAtPosition(position).toString();
-
                             String course_id = (course_ids[position]).trim();
 
                         //inserting that course_id in the professor_course table in the database
@@ -145,7 +143,7 @@ public class ManageCourse extends AppCompatActivity {
                     text.setText("Something went wrong while getting courses list");
                 }
 
-            //getting the list of all the courses of that student (to show in the list for deleting any course)
+            //getting the list of all the courses of a professor (to show in the list for deleting any course)
                 type = "get_prof_courses";
                 String get_user_courses_result = (new DatabaseActions().execute(type, user_id_cookie).get());
 
@@ -181,9 +179,6 @@ public class ManageCourse extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
                     {
                     //getting the course_id of selected item
-//                        String listViewText = ((TextView)view).getText().toString();
-//                        String temp[] = listViewText.split(" # ");
-
                         final String course_id_to_delete = course_ids1[i];
 
                     //asking for confirm deletion by creating a dialog box
