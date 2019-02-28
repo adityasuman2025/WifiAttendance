@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -36,6 +37,9 @@ public class ScanQR extends AppCompatActivity
     Button scan_btn;
     TextView text_danger;
     TextView text;
+
+    Button manual_attend_btn;
+    Button delete_attend_btn;
 
     String user_id_cookie;
     String course_id_cookie;
@@ -143,6 +147,9 @@ public class ScanQR extends AppCompatActivity
         scan_btn = findViewById(R.id.scan_btn);
         text_danger = findViewById(R.id.text_danger);
         text = findViewById(R.id.text);
+
+        manual_attend_btn = findViewById(R.id.manual_attend_btn);
+        delete_attend_btn = findViewById(R.id.delete_attend_btn);
 
     //to get the cookie values
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
@@ -279,6 +286,30 @@ public class ScanQR extends AppCompatActivity
                 intentIntegrator.setBeepEnabled(true);
                 intentIntegrator.setBarcodeImageEnabled(true);
                 intentIntegrator.initiateScan();
+            }
+        });
+
+    //on clicking on manual attendance btn
+        manual_attend_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+            //redirecting to the manual attendance adding page
+                Intent addManualAttendanceIntent = new Intent(ScanQR.this, AddManualAttendance.class);
+                startActivity(addManualAttendanceIntent);
+            }
+        });
+
+    //on clicking on delete attendance btn
+        delete_attend_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                //redirecting to the delete attendance page
+                Intent deleteAttendanceIntent = new Intent(ScanQR.this, DeleteAttendance.class);
+                startActivity(deleteAttendanceIntent);
             }
         });
     }
