@@ -30,6 +30,7 @@ public class DeleteAttendance extends AppCompatActivity
 {
     //defining variables
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     String user_id_cookie;
     String course_id_cookie;
@@ -39,6 +40,8 @@ public class DeleteAttendance extends AppCompatActivity
     TextView todaysDate;
 
     String formattedDate;
+
+    String no_of_students_present_today_cookie_name;
 
     String type;
     ListView presentStudentLV;
@@ -61,6 +64,7 @@ public class DeleteAttendance extends AppCompatActivity
 
         //getting the info of the logged user
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         user_id_cookie = sharedPreferences.getString("user_id", "DNE");
         final String user_id = new Encryption().decrypt(user_id_cookie);
@@ -84,6 +88,10 @@ public class DeleteAttendance extends AppCompatActivity
             //getting the list of all the students who are present today in that course
             DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
             String today = dateFormat1.format(date);
+
+        //for no of present students counter
+            no_of_students_present_today_cookie_name = today + "_date_" + course_id_cookie + "_course_present_counter";
+            String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
 
             type = "get_students_present_for_a_date_for_a_course";
             String get_students_present_for_a_date_for_a_courseResults = null;
@@ -170,6 +178,17 @@ public class DeleteAttendance extends AppCompatActivity
 
                                                         if(delete_stud_attendResult.equals("1"))
                                                         {
+                                                        //decreasing the no of students counter
+                                                            String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+
+                                                            if(Integer.parseInt(c) >0)
+                                                            {
+                                                                int new_c = Integer.parseInt(c) - 1;
+
+                                                                editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
+                                                                editor.apply();
+                                                            }
+
                                                             //reloading this activity
                                                             finish();
                                                             startActivity(getIntent());

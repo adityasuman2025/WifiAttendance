@@ -32,6 +32,7 @@ public class AddManualAttendance extends AppCompatActivity
 {
     //defining variables
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     String user_id_cookie;
     String course_id_cookie;
@@ -41,6 +42,8 @@ public class AddManualAttendance extends AppCompatActivity
     TextView todaysDate;
 
     String formattedDate;
+
+    String no_of_students_present_today_cookie_name;
 
     String type;
     Spinner studentListSpinnner;
@@ -87,6 +90,14 @@ public class AddManualAttendance extends AppCompatActivity
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
         {
+            //getting the list of all the students who are present today in that course
+            DateFormat dateFormat0 = new SimpleDateFormat("yyyy-MM-dd");
+            String today1 = dateFormat0.format(date);
+
+            //for no of present students counter
+            no_of_students_present_today_cookie_name = today1 + "_date_" + course_id_cookie + "_course_present_counter";
+            String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+
         //getting the list of all the students registered for that course
             try
             {
@@ -168,6 +179,14 @@ public class AddManualAttendance extends AppCompatActivity
                                                                     String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, selected_stud_id, course_id_cookie).get());
                                                                     if(insert_student_attendance_for_course_and_dateResult.equals("1"))
                                                                     {
+                                                                        //decreasing the no of students counter
+                                                                        String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+
+                                                                        int new_c = Integer.parseInt(c) + 1;
+
+                                                                        editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
+                                                                        editor.apply();
+
                                                                         //reloading this activity
                                                                         finish();
                                                                         startActivity(getIntent());

@@ -35,6 +35,8 @@ public class ScanQR extends AppCompatActivity
 //defining variables
     TextView courseCode;
     Button scan_btn;
+
+    TextView present_counter;
     TextView text_danger;
     TextView text;
 
@@ -45,6 +47,9 @@ public class ScanQR extends AppCompatActivity
     String course_id_cookie;
     String type;
     String formattedDate;
+
+    String no_of_students_present_today_cookie_name;
+    String no_of_students_present_today_cookie;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -145,6 +150,8 @@ public class ScanQR extends AppCompatActivity
 
         courseCode = findViewById(R.id.courseCode);
         scan_btn = findViewById(R.id.scan_btn);
+
+        present_counter = findViewById(R.id.present_counter);
         text_danger = findViewById(R.id.text_danger);
         text = findViewById(R.id.text);
 
@@ -163,13 +170,19 @@ public class ScanQR extends AppCompatActivity
 
         courseCode.setText(course_code_cookie);
 
-    //getting the cookies of classes of courses for today
+    //displaying the no of present students counter
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         formattedDate = dateFormat.format(date);
 
-        final String today_is_class_of_courses = formattedDate + "__courses";
+        no_of_students_present_today_cookie_name = formattedDate + "_date_" + course_id_cookie + "_course_present_counter";
 
+        no_of_students_present_today_cookie = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+
+        present_counter.setText("Present Students Counter: " + no_of_students_present_today_cookie);
+
+    //getting the cookies of classes of courses for today
+        final String today_is_class_of_courses = formattedDate + "__courses";
         final String todays_classes_course_ids_cookie = sharedPreferences.getString(today_is_class_of_courses, "DNE");
 
         if(todays_classes_course_ids_cookie.equals("DNE"))//no any class of any course has been added today
@@ -196,7 +209,7 @@ public class ScanQR extends AppCompatActivity
                             editor.putString(today_is_class_of_courses, todays_courses);
                             editor.apply();
 
-                        //reloading this activity
+                            //reloading this activity
                             finish();
                             startActivity(getIntent());
                         }
@@ -247,7 +260,7 @@ public class ScanQR extends AppCompatActivity
                                 editor.putString(today_is_class_of_courses, todays_courses);
                                 editor.apply();
 
-                            //reloading this activity
+                                //reloading this activity
                                 finish();
                                 startActivity(getIntent());
                             }
@@ -371,6 +384,15 @@ public class ScanQR extends AppCompatActivity
                                     editor.putString(today_students_present_for_this_course, students_present);
                                     editor.apply();
 
+                                    //increasing the no of students counter
+                                    String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+                                    int new_c = Integer.parseInt(c) + 1;
+
+                                    editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
+                                    editor.apply();
+
+                                    present_counter.setText("Present Students Counter: " + new_c);
+
                                     //reloading this activity
                                     finish();
                                     startActivity(getIntent());
@@ -395,7 +417,16 @@ public class ScanQR extends AppCompatActivity
                                         editor.putString(today_students_present_for_this_course, students_present);
                                         editor.apply();
 
-                                        //reloading this activity
+                                    //increasing the no of students counter
+                                        String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+                                        int new_c = Integer.parseInt(c) + 1;
+
+                                        editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
+                                        editor.apply();
+
+                                        present_counter.setText("Present Students Counter: " + new_c);
+
+                                    //reloading this activity
                                         finish();
                                         startActivity(getIntent());
                                     }
