@@ -98,7 +98,7 @@ public class AddManualAttendance extends AppCompatActivity
             //for no of present students counter
             no_of_students_present_today_cookie_name = today0 + "_date_" + course_id_cookie + "_course_present_counter";
             String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
-           
+
         //getting the list of all the students registered for that course
             try
             {

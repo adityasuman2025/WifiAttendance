@@ -1,11 +1,16 @@
 package com.example.professorattendance;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,10 +20,9 @@ import android.widget.TextView;
 
 import java.util.concurrent.ExecutionException;
 
-public class Register extends AppCompatActivity
-{
+public class Register extends AppCompatActivity {
 
-//defining variables
+    //defining variables
     EditText reg_name_input;
     EditText reg_email_input;
     EditText reg_phone_input;
@@ -33,9 +37,9 @@ public class Register extends AppCompatActivity
     String androidId;
     String uniqueID;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
@@ -49,9 +53,25 @@ public class Register extends AppCompatActivity
         reg_feed = findViewById(R.id.reg_feed);
         reg_new_btn = findViewById(R.id.reg_new_btn);
 
-    //to get unique identification of a phone and displaying it
+        //to get unique identification of a phone and displaying it
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID); // android id
-        uniqueID = android.os.Build.SERIAL; // Serial_no
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) //for android 9
+        {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            uniqueID = Build.getSerial(); // Serial_no
+        }
+        else
+        {
+            uniqueID = android.os.Build.SERIAL; // Serial_no
+        }
 
     //on clicking register button
         reg_new_btn.setOnClickListener(new View.OnClickListener()
