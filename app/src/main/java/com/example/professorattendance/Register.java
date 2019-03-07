@@ -65,13 +65,9 @@ public class Register extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+        }
 
-            uniqueID = Build.getSerial(); // Serial_no
-        }
-        else
-        {
-            uniqueID = android.os.Build.SERIAL; // Serial_no
-        }
+        uniqueID = Build.getSerial();
 
     //on clicking register button
         reg_new_btn.setOnClickListener(new View.OnClickListener()
@@ -100,15 +96,19 @@ public class Register extends AppCompatActivity {
                         String type = "check_prof_phone_registered";
                         try
                         {
-                            int check_phone_result = Integer.parseInt(new DatabaseActions().execute(type, androidId, uniqueID).get());
+                            String check_phone_result = new DatabaseActions().execute(type, androidId, uniqueID).get();
 
-                            if (check_phone_result == 1)//yes phone is already registered
+                            if (check_phone_result.equals(1))//yes phone is already registered
                             {
                                 reg_feed.setText("This phone is already registered for a professor.");
                             }
-                            else if (check_phone_result == -1)
+                            else if (check_phone_result.equals(-1))
                             {
                                 reg_feed.setText("Database issue found");
+                            }
+                            else if (check_phone_result.equals("Something went wrong"))
+                            {
+                                reg_feed.setText(check_phone_result);
                             }
                             else
                             {
@@ -117,29 +117,33 @@ public class Register extends AppCompatActivity {
                                 {
                                 //check if that username is already registered or not
                                     type = "check_username_exist";
-                                    int check_roll_result = Integer.parseInt(new DatabaseActions().execute(type, reg_username).get());
+                                    String check_roll_result = new DatabaseActions().execute(type, reg_username).get();
 
-                                    if (check_roll_result == 1)//yes username already exist
+                                    if (check_roll_result.equals(1))//yes username already exist
                                     {
                                         reg_feed.setText("This username is already taken.");
                                     }
-                                    else if (check_roll_result == -1)
+                                    else if (check_roll_result.equals(-1))
                                     {
                                         reg_feed.setText("Database issue found");
+                                    }
+                                    else if (check_roll_result.equals("Something went wrong"))
+                                    {
+                                        reg_feed.setText(check_roll_result);
                                     }
                                     else
                                     {
                                     //if everything fine then registering the new user in the database
                                         type = "register_new_prof_in_db";
-                                        int register_new_user_result = Integer.parseInt(new DatabaseActions().execute(type, reg_name, reg_email, reg_phone, reg_username, reg_pass, androidId, uniqueID).get());
+                                        String register_new_user_result = new DatabaseActions().execute(type, reg_name, reg_email, reg_phone, reg_username, reg_pass, androidId, uniqueID).get();
 
-                                        if (register_new_user_result > 0)//successfully registered
+                                        if (Integer.parseInt(register_new_user_result) > 0)//successfully registered
                                         {
                                         //creating cookie of the logged prof
                                             sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
                                             SharedPreferences.Editor editor = sharedPreferences.edit();
                                             editor.putString("username", Encryption.encrypt(reg_username));
-                                            editor.putString("user_id", Encryption.encrypt(Integer.toString(register_new_user_result)));
+                                            editor.putString("user_id", Encryption.encrypt(register_new_user_result));
                                             editor.apply();
 
                                         //redirecting the prof dashboard page
@@ -147,9 +151,13 @@ public class Register extends AppCompatActivity {
                                             startActivity(dashboardIntent);
                                             finish(); //used to delete the last activity history which we want to delete
                                         }
-                                        else if (register_new_user_result == -1)
+                                        else if (register_new_user_result.equals(-1))
                                         {
                                             reg_feed.setText("Database issue found");
+                                        }
+                                        else if (register_new_user_result.equals("Something went wrong"))
+                                        {
+                                            reg_feed.setText(register_new_user_result);
                                         }
                                         else
                                         {
