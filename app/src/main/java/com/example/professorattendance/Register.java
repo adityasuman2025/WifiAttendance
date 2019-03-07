@@ -98,11 +98,11 @@ public class Register extends AppCompatActivity {
                         {
                             String check_phone_result = new DatabaseActions().execute(type, androidId, uniqueID).get();
 
-                            if (check_phone_result.equals(1))//yes phone is already registered
+                            if (check_phone_result.equals("1"))//yes phone is already registered
                             {
                                 reg_feed.setText("This phone is already registered for a professor.");
                             }
-                            else if (check_phone_result.equals(-1))
+                            else if (check_phone_result.equals("-1"))
                             {
                                 reg_feed.setText("Database issue found");
                             }
@@ -119,11 +119,11 @@ public class Register extends AppCompatActivity {
                                     type = "check_username_exist";
                                     String check_roll_result = new DatabaseActions().execute(type, reg_username).get();
 
-                                    if (check_roll_result.equals(1))//yes username already exist
+                                    if (check_roll_result.equals("1"))//yes username already exist
                                     {
                                         reg_feed.setText("This username is already taken.");
                                     }
-                                    else if (check_roll_result.equals(-1))
+                                    else if (check_roll_result.equals("-1"))
                                     {
                                         reg_feed.setText("Database issue found");
                                     }
@@ -151,7 +151,7 @@ public class Register extends AppCompatActivity {
                                             startActivity(dashboardIntent);
                                             finish(); //used to delete the last activity history which we want to delete
                                         }
-                                        else if (register_new_user_result.equals(-1))
+                                        else if (register_new_user_result.equals("-1"))
                                         {
                                             reg_feed.setText("Database issue found");
                                         }
