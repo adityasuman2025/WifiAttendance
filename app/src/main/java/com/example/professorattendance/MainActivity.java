@@ -3,6 +3,7 @@ package com.example.professorattendance;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
@@ -25,8 +27,6 @@ public class MainActivity extends AppCompatActivity
     TextView login_feed;
 
     SharedPreferences sharedPreferences;
-    String androidId;
-    String uniqueID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,24 +74,28 @@ public class MainActivity extends AppCompatActivity
                     //trying to login the user
                     try
                     {
-                        int login_result = Integer.parseInt(new DatabaseActions().execute(type, username, password).get());
+                        String login_result = new DatabaseActions().execute(type, username, password).get();
 
-                        if(login_result > 0)
+                        if(login_result.equals("-1"))
+                        {
+                            login_feed.setText("Database issue found");
+                        }
+                        else if (login_result.equals("Something went wrong"))
+                        {
+                            login_feed.setText(login_result);
+                        }
+                        else if(Integer.parseInt(login_result) > 0)
                         {
                             //creating cookie of the logged in user
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("username", new Encryption().encrypt(username));
-                            editor.putString("user_id", new Encryption().encrypt(Integer.toString(login_result)));
+                            editor.putString("user_id", new Encryption().encrypt(login_result));
                             editor.apply();
 
                             //redirecting the list course page
                             Intent dashboardIntent = new Intent(MainActivity.this, Dashboard.class);
                             startActivity(dashboardIntent);
                             finish(); //used to delete the last activity history which we want to delete
-                        }
-                        else if(login_result == -1)
-                        {
-                            login_feed.setText("Database issue found");
                         }
                         else
                         {
