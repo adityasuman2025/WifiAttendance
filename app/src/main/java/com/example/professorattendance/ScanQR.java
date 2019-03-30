@@ -365,7 +365,7 @@ public class ScanQR extends AppCompatActivity
                         Long tsLong = System.currentTimeMillis()/1000;
                         String current_ts = tsLong.toString();
 
-                        if(Integer.parseInt(current_ts) <= Integer.parseInt(code_timestamps) + 15)
+                        if(Integer.parseInt(current_ts) <= Integer.parseInt(code_timestamps) + 10)
                         {
                             //getting the cookie of student present for this courses for today
                             final String today_students_present_for_this_course = formattedDate + "_date_" + code_course_id + "_course_present_students";
