@@ -31,7 +31,12 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,6 +66,8 @@ public class ScanQR extends AppCompatActivity
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+
+    ServerSocket serverSocket;
 
     //to prevent going back from current window
     @Override
@@ -296,13 +303,16 @@ public class ScanQR extends AppCompatActivity
         }
 
     //checking if hotspot is on or not
-        final ApManager ap = new ApManager(this.getApplicationContext());
+        ApManager ap = new ApManager(this.getApplicationContext());
 
         Boolean hotspotStatus = ap.isApOn();
         if(hotspotStatus)//hotspot is ON
         {
-            //Drawable wifiImage = getResources().getDrawable(R.drawable.wifi);
             wifImg.setImageResource(R.drawable.wifi);
+
+        //handling socket
+            Thread socketServerThread = new Thread(new SocketServerThread());
+            socketServerThread.start();
         }
         else//hotspot is OFF
         {
@@ -334,16 +344,112 @@ public class ScanQR extends AppCompatActivity
         });
     }
 
-//check whether wifi hotspot on or off
-    public static boolean isHostspotOn(Context context) {
-        WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
-        try {
-            Method method = wifimanager.getClass().getDeclaredMethod("isWifiApEnabled");
-            method.setAccessible(true);
-            return (Boolean) method.invoke(wifimanager);
+//inner class to send and receive message
+    private class SocketServerThread extends Thread
+    {
+        final int SocketServerPORT = 3399;
+        int count = 0;
+
+        @Override
+        public void run() {
+            Socket socket = null;
+            DataInputStream dataInputStream = null;
+            DataOutputStream dataOutputStream = null;
+
+            try
+            {
+                serverSocket = new ServerSocket(SocketServerPORT);
+
+                ScanQR.this.runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        Toast.makeText(ScanQR.this, "PORT: " + SocketServerPORT, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                while (true)
+                {
+                //preparing socket for receiving and sending msg
+                    socket = serverSocket.accept();
+                    dataInputStream = new DataInputStream(socket.getInputStream());
+                    dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
+                //receiving msg
+                    final String messageFromClient = dataInputStream.readUTF();
+
+                    ScanQR.this.runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run() {
+                            text.setText(messageFromClient);
+                        }
+                    });
+
+                //sending msg
+                    String msgReply = messageFromClient + ": Received";
+                    dataOutputStream.writeUTF(msgReply);
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+
+                final String errMsg = e.toString();
+                ScanQR.this.runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        text_danger.setText(errMsg);
+                    }
+                });
+
+            } finally
+            {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (dataInputStream != null) {
+                    try {
+                        dataInputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (dataOutputStream != null) {
+                    try {
+                        dataOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        catch (Throwable ignored) {}
-        return false;
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        if (serverSocket != null)
+        {
+            try
+            {
+                serverSocket.close();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 //for getting results after scanning the qr code
