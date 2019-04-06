@@ -7,6 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +29,7 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -287,20 +292,58 @@ public class ScanQR extends AppCompatActivity
             }
         }
 
+    //checking if hotspot is on or not
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.System.canWrite(this.getApplicationContext())) {
+
+            } else {
+                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                intent.setData(Uri.parse("package:" + this.getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+
+        final ApManager ap = new ApManager(this.getApplicationContext());
+
+        final Boolean hotspotStatus = ap.isApOn();
+        if(hotspotStatus)//hotspot is ON
+        {
+            scan_btn.setText("OFF");
+        }
+        else//hotspot is OFF
+        {
+            scan_btn.setText("ON");
+        }
+
     //on clicking on scan button
         scan_btn.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                IntentIntegrator intentIntegrator = new IntentIntegrator(ScanQR.this);
-                intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-                intentIntegrator.setCameraId(0);
-                intentIntegrator.setOrientationLocked(false);
-                intentIntegrator.setPrompt("scanning");
-                intentIntegrator.setBeepEnabled(true);
-                intentIntegrator.setBarcodeImageEnabled(true);
-                intentIntegrator.initiateScan();
+                if(hotspotStatus)//hotspot is ON
+                {
+                    scan_btn.setText("ON");
+
+                //turning hotspot OFF
+                    Boolean status = ap.turnWifiApOff();
+                    if(status)
+                        Toast.makeText(ScanQR.this, "Hotspot is turned OFF", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(ScanQR.this, "Hotspot is turned ON", Toast.LENGTH_SHORT).show();
+                }
+                else//hotspot is OFF
+                {
+                    scan_btn.setText("OFF");
+
+                //turning hotspot ON
+                    Boolean status = ap.createNewNetwork("WifiAttendance", "MNgoS");
+                    if(status)
+                        Toast.makeText(ScanQR.this, "Hotspot is turned ON", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(ScanQR.this, "Hotspot is turned OFF", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -327,6 +370,18 @@ public class ScanQR extends AppCompatActivity
                 startActivity(deleteAttendanceIntent);
             }
         });
+    }
+
+//check whether wifi hotspot on or off
+    public static boolean isHostspotOn(Context context) {
+        WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        try {
+            Method method = wifimanager.getClass().getDeclaredMethod("isWifiApEnabled");
+            method.setAccessible(true);
+            return (Boolean) method.invoke(wifimanager);
+        }
+        catch (Throwable ignored) {}
+        return false;
     }
 
 //for getting results after scanning the qr code
