@@ -341,12 +341,12 @@ public class ScanQR extends AppCompatActivity
         {
             String scanned_result = new Encryption().decrypt(result.getContents());
 
-            //checking if phone if connected to net or not
+        //checking if phone if connected to net or not
             ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
             if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
             {
-                //device is connected to internet
+            //device is connected to internet
                 try
                 {
                     JSONArray js = new JSONArray(scanned_result);
