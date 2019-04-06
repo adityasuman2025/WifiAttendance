@@ -35,7 +35,7 @@ public class ApManager
         }
     }
 
-    //check whether wifi hotspot on or off
+//check whether wifi hotspot on or off
     public boolean isApOn() {
         try {
             Method method = mWifiManager.getClass().getDeclaredMethod("isWifiApEnabled");
@@ -63,7 +63,8 @@ public class ApManager
 // Turn wifiAp hotspot off
     public boolean turnWifiApOff()
     {
-        try {
+        try
+        {
             Method method = mWifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
             method.invoke(mWifiManager, null, false);
             return true;
@@ -75,26 +76,28 @@ public class ApManager
 
     public boolean createNewNetwork(String ssid, String password)
     {
-        mWifiManager.setWifiEnabled(false); // turn off Wifi
-        if (isApOn()) {
-            turnWifiApOff();
-        } else {
-            Toast.makeText(context, "Hotspot is turned OFF", Toast.LENGTH_SHORT).show();
-        }
-
-    // creating new wifi configuration
-        WifiConfiguration myConfig = new WifiConfiguration();
-        myConfig.SSID = ssid; // SSID name of netwok
-        myConfig.preSharedKey = password; // password for network
-        myConfig.allowedKeyManagement.set(4); // 4 is for KeyMgmt.WPA2_PSK which is not exposed by android KeyMgmt class
-        myConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN); // Set Auth Algorithms to
+//        mWifiManager.setWifiEnabled(false); // turn off Wifi
+//        if (isApOn()) {
+//            turnWifiApOff();
+//        } else {
+//            Toast.makeText(context, "Hotspot is made OFF", Toast.LENGTH_SHORT).show();
+//        }
+//
+//    // creating new wifi configuration
+//        WifiConfiguration myConfig = new WifiConfiguration();
+//        myConfig.SSID = ssid; // SSID name of netwok
+//        myConfig.preSharedKey = password; // password for network
+//        myConfig.allowedKeyManagement.set(4); // 4 is for KeyMgmt.WPA2_PSK which is not exposed by android KeyMgmt class
+//        myConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN); // Set Auth Algorithms to
 
     //turning hotspot ON
         try
         {
             Method method = mWifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
-            return (Boolean) method.invoke(mWifiManager, myConfig, true);  // setting and turing on android wifiap with new configrations
-        } catch (Exception e) {
+            return (Boolean) method.invoke(mWifiManager, null, true);  // setting and turing on android wifiap with new configrations
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
         return false;

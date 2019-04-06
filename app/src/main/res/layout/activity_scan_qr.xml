@@ -5,71 +5,56 @@
     android:layout_height="match_parent"
     tools:context=".ScanQR">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/courseCode"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:layout_marginTop="40px"
+        android:textSize="100px"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/courseCode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textColor="@color/colorAccent"
-            android:layout_marginTop="50px"
-            android:textSize="100px"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/scan_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="500px"
-            android:layout_gravity="center_horizontal"
-            android:text="Scan" />
-
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/wifImg"
+        android:layout_width="match_parent"
+        android:layout_height="500px"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/present_counter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="600px"
         android:textSize="50px"
         android:textAlignment="center"
-        android:text="No Of Present Students"/>
+        android:text="No Of Present Students"
+        android:layout_below="@+id/wifImg"/>
 
     <TextView
         android:id="@+id/text_danger"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="400px"
         android:textColor="@color/red"
         android:textSize="50px"
         android:textAlignment="center"
-        android:text=""/>
+        android:layout_above="@+id/text"/>
 
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="350px"
         android:textSize="45px"
         android:textAlignment="center"
-        android:text=""/>
+        android:layout_above="@+id/manual_attend_btn"/>
 
     <Button
         android:id="@+id/manual_attend_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/delete_attend_btn"
-
-        android:layout_marginTop="-54dp"
+        android:layout_above="@+id/delete_attend_btn"
         android:background="@color/colorAccent"
-        android:padding="2px"
+        android:layout_margin="5px"
         android:shadowDx="0"
         android:shadowDy="0"
         android:text="Add Manual Attendance"
@@ -85,7 +70,7 @@
         android:shadowDy="0"
         android:shadowDx="0"
         android:textColor="@color/white"
-        android:padding="2px"
+        android:layout_margin="5px"
         />
 
 </RelativeLayout>

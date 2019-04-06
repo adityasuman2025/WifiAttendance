@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,7 @@ public class ScanQR extends AppCompatActivity
     TextView courseCode;
     Button scan_btn;
 
+    ImageView wifImg;
     TextView present_counter;
     TextView text_danger;
     TextView text;
@@ -154,8 +157,8 @@ public class ScanQR extends AppCompatActivity
         setContentView(R.layout.activity_scan_qr);
 
         courseCode = findViewById(R.id.courseCode);
-        scan_btn = findViewById(R.id.scan_btn);
 
+        wifImg = findViewById(R.id.wifImg);
         present_counter = findViewById(R.id.present_counter);
         text_danger = findViewById(R.id.text_danger);
         text = findViewById(R.id.text);
@@ -293,59 +296,18 @@ public class ScanQR extends AppCompatActivity
         }
 
     //checking if hotspot is on or not
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.System.canWrite(this.getApplicationContext())) {
-
-            } else {
-                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData(Uri.parse("package:" + this.getPackageName()));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-
         final ApManager ap = new ApManager(this.getApplicationContext());
 
-        final Boolean hotspotStatus = ap.isApOn();
+        Boolean hotspotStatus = ap.isApOn();
         if(hotspotStatus)//hotspot is ON
         {
-            scan_btn.setText("OFF");
+            //Drawable wifiImage = getResources().getDrawable(R.drawable.wifi);
+            wifImg.setImageResource(R.drawable.wifi);
         }
         else//hotspot is OFF
         {
-            scan_btn.setText("ON");
+            text_danger.setText("Your mobile hotspot is OFF. Turn it ON and restart the App");
         }
-
-    //on clicking on scan button
-        scan_btn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                if(hotspotStatus)//hotspot is ON
-                {
-                    scan_btn.setText("ON");
-
-                //turning hotspot OFF
-                    Boolean status = ap.turnWifiApOff();
-                    if(status)
-                        Toast.makeText(ScanQR.this, "Hotspot is turned OFF", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(ScanQR.this, "Hotspot is turned ON", Toast.LENGTH_SHORT).show();
-                }
-                else//hotspot is OFF
-                {
-                    scan_btn.setText("OFF");
-
-                //turning hotspot ON
-                    Boolean status = ap.createNewNetwork("WifiAttendance", "MNgoS");
-                    if(status)
-                        Toast.makeText(ScanQR.this, "Hotspot is turned ON", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(ScanQR.this, "Hotspot is turned OFF", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
     //on clicking on manual attendance btn
         manual_attend_btn.setOnClickListener(new View.OnClickListener()
