@@ -26,8 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +33,6 @@ import org.json.JSONException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
@@ -47,7 +44,6 @@ public class ScanQR extends AppCompatActivity
 {
 //defining variables
     TextView courseCode;
-    Button scan_btn;
 
     ImageView wifImg;
     TextView present_counter;
@@ -397,9 +393,6 @@ public class ScanQR extends AppCompatActivity
                             String code_course_id = js.getString(1);
                             String code_timestamps = js.getString(2);
 
-                            int size = js.length();
-                            text.setText(Integer.toString(size));
-
                             if(!code_course_id.equals(course_id_cookie))//if scanned for wrong course
                             {
                                 feedForClient = "You are trying to mark attendance for wrong Course";
@@ -491,8 +484,11 @@ public class ScanQR extends AppCompatActivity
                                 }
                             }
                         } catch (JSONException e) {
+                            feedForClient = "Attention Hacker!! Don't be over smart";
+                            feedForHost = "Wrong Attempt is made! Hacker around";
                             e.printStackTrace();
-                        } catch (InterruptedException e) {
+                        }
+                        catch (InterruptedException e) {
                             e.printStackTrace();
                         } catch (ExecutionException e) {
                             e.printStackTrace();
@@ -511,7 +507,7 @@ public class ScanQR extends AppCompatActivity
                         @Override
                         public void run()
                         {
-                        //showing processed msg to professor/host/server
+                            //showing processed msg to professor/host/server
                             if(feedForHost.equals("Attendance successfully marked"))
                             {
                                 text.setText(feedForHost);
@@ -539,8 +535,6 @@ public class ScanQR extends AppCompatActivity
             }
             catch (IOException e)
             {
-                e.printStackTrace();
-
                 final String errMsg = e.toString();
                 ScanQR.this.runOnUiThread(new Runnable()
                 {
@@ -550,7 +544,11 @@ public class ScanQR extends AppCompatActivity
                         text_danger.setText(errMsg);
                     }
                 });
-
+                e.printStackTrace();
+            }
+            catch (IllegalArgumentException e)
+            {
+                e.printStackTrace();
             }
             finally
             {
