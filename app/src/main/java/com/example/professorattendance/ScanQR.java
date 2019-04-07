@@ -228,9 +228,8 @@ public class ScanQR extends AppCompatActivity
                             editor.putString(today_is_class_of_courses, todays_courses);
                             editor.apply();
 
-                        //reloading this activity
+                        //closing this activity
                             finish();
-                            //startActivity(getIntent());
                         }
                         else
                         {
@@ -279,9 +278,8 @@ public class ScanQR extends AppCompatActivity
                                 editor.putString(today_is_class_of_courses, todays_courses);
                                 editor.apply();
 
-                            //reloading this activity
+                            //closing this activity
                                 finish();
-                                startActivity(getIntent());
                             }
                             else
                             {
