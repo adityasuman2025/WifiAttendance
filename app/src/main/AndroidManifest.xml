@@ -43,7 +43,7 @@
             android:label="View Student Attendance" />
         <activity
             android:name=".ScanQR"
-            android:label="Scan QR" />
+            android:label="Wifi Take Attendance" />
         <activity
             android:name=".ManageCourse"
             android:label="Manage Courses" />
