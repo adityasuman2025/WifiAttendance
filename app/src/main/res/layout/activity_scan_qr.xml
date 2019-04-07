@@ -44,9 +44,10 @@
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="45px"
+        android:layout_above="@+id/manual_attend_btn"
         android:textAlignment="center"
-        android:layout_above="@+id/manual_attend_btn"/>
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="50px" />
 
     <Button
         android:id="@+id/manual_attend_btn"

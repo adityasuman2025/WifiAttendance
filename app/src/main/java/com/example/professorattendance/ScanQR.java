@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -436,7 +437,6 @@ public class ScanQR extends AppCompatActivity
 
                                         feedForClient = "Your attendance successfully marked";
                                         feedForHost = "Attendance successfully marked";
-
                                     }
                                     else
                                     {
@@ -471,10 +471,7 @@ public class ScanQR extends AppCompatActivity
                                             present_counter.setText("Present Students Counter: " + new_c);
 
                                             feedForClient = "Your attendance successfully marked";
-
-                                            //reloading this activity
-                                            finish();
-                                            startActivity(getIntent());
+                                            feedForHost = "Attendance successfully marked";
                                         }
                                         else
                                         {
@@ -514,8 +511,25 @@ public class ScanQR extends AppCompatActivity
                         @Override
                         public void run()
                         {
-                        //showing error to professor/host/server
-                            text_danger.setText(feedForHost);
+                        //showing processed msg to professor/host/server
+                            if(feedForHost.equals("Attendance successfully marked"))
+                            {
+                                text.setText(feedForHost);
+                            }
+                            else
+                            {
+                                text_danger.setText(feedForHost);
+                            }
+
+                            final Handler someHandler = new Handler(getMainLooper());
+                            someHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    text_danger.setText("");
+                                    text.setText("");
+                                }
+                            }, 3000);
                         }
                     });
 
