@@ -350,7 +350,6 @@ public class ScanQR extends AppCompatActivity
     private class SocketServerThread extends Thread
     {
         final int SocketServerPORT = 3399;
-        int count = 0;
 
         @Override
         public void run()
@@ -397,6 +396,9 @@ public class ScanQR extends AppCompatActivity
                             String code_student_id = js.getString(0);
                             String code_course_id = js.getString(1);
                             String code_timestamps = js.getString(2);
+
+                            int size = js.length();
+                            text.setText(Integer.toString(size));
 
                             if(!code_course_id.equals(course_id_cookie))//if scanned for wrong course
                             {
@@ -533,7 +535,6 @@ public class ScanQR extends AppCompatActivity
 
                 //sending msg/data to client(student)
                     dataOutputStream.writeUTF(feedForClient);
-
                 }
             }
             catch (IOException e)
@@ -550,7 +551,8 @@ public class ScanQR extends AppCompatActivity
                     }
                 });
 
-            } finally
+            }
+            finally
             {
                 if (socket != null) {
                     try {
