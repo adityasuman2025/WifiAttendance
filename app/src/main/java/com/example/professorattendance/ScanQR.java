@@ -69,6 +69,9 @@ public class ScanQR extends AppCompatActivity
 
     ServerSocket serverSocket;
 
+    String feedForClient = "";
+    String feedForHost = "";
+
     //to prevent going back from current window
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
@@ -275,7 +278,7 @@ public class ScanQR extends AppCompatActivity
                                 editor.putString(today_is_class_of_courses, todays_courses);
                                 editor.apply();
 
-                                //reloading this activity
+                            //reloading this activity
                                 finish();
                                 startActivity(getIntent());
                             }
@@ -376,19 +379,133 @@ public class ScanQR extends AppCompatActivity
                     dataInputStream = new DataInputStream(socket.getInputStream());
                     dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-                //receiving msg
+                //receiving data from client(student)
                     final String messageFromClient = dataInputStream.readUTF();
 
                     ScanQR.this.runOnUiThread(new Runnable()
                     {
                         @Override
-                        public void run() {
+                        public void run()
+                        {
                             text.setText(messageFromClient);
+
+                            String scanned_result = new Encryption().decrypt(messageFromClient);
+
+                        //checking if phone if connected to net or not
+                            ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                            if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
+                            {
+                                //device is connected to internet
+                                try
+                                {
+                                    JSONArray js = new JSONArray(scanned_result);
+
+                                    String code_student_id = js.getString(0);
+                                    String code_course_id = js.getString(1);
+                                    String code_timestamps = js.getString(2);
+
+                                    if(!code_course_id.equals(course_id_cookie))//if scanned for wrong course
+                                    {
+                                        feedForClient = "You are trying to mark attendance for wrong Course";
+                                        feedForHost = "Student is trying to mark attendance for wrong Course";
+
+                                        //text_danger.setText("This QR Code is not associated with the selected course");
+                                    }
+                                    else
+                                    {
+                                    //getting the cookie of student present for this courses for today
+                                        final String today_students_present_for_this_course = formattedDate + "_date_" + code_course_id + "_course_present_students";
+                                        final String today_students_present_for_this_course_cookie = sharedPreferences.getString(today_students_present_for_this_course, "DNE");
+
+                                        if(today_students_present_for_this_course_cookie.equals("DNE")) //no any students are present for this course today
+                                        {
+                                            //inserting this student attendance for this date for today in database
+                                            type = "insert_student_attendance_for_course_and_date";
+
+                                            String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, code_student_id, code_course_id).get());
+                                            if(insert_student_attendance_for_course_and_dateResult.equals("1"))
+                                            {
+                                                //creating cookie of students present today for this course and adding this student in the cookie
+                                                String students_present = code_student_id + "!";
+                                                editor.putString(today_students_present_for_this_course, students_present);
+                                                editor.apply();
+
+                                                //increasing the no of students counter
+                                                String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+                                                int new_c = Integer.parseInt(c) + 1;
+
+                                                editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
+                                                editor.apply();
+
+                                                present_counter.setText("Present Students Counter: " + new_c);
+
+                                                //reloading this activity
+                                                finish();
+                                                startActivity(getIntent());
+                                            }
+                                            else
+                                            {
+                                                text_danger.setText("Something went wrong while taking student attendance");
+                                            }
+                                        }
+                                        else //some students are present for this course today
+                                        {
+                                            if(!today_students_present_for_this_course_cookie.contains(code_student_id + "!")) //if this student attendance has not been taken for this course for today
+                                            {
+                                                //inserting this student attendance for this date for today in database
+                                                type = "insert_student_attendance_for_course_and_date";
+
+                                                String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, code_student_id, code_course_id).get());
+                                                if(insert_student_attendance_for_course_and_dateResult.equals("1"))
+                                                {
+                                                    //including this student attendance in the cookie
+                                                    String students_present = today_students_present_for_this_course_cookie + code_student_id + "!";
+                                                    editor.putString(today_students_present_for_this_course, students_present);
+                                                    editor.apply();
+
+                                                    //increasing the no of students counter
+                                                    String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
+                                                    int new_c = Integer.parseInt(c) + 1;
+
+                                                    editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
+                                                    editor.apply();
+
+                                                    present_counter.setText("Present Students Counter: " + new_c);
+
+                                                    //reloading this activity
+                                                    finish();
+                                                    startActivity(getIntent());
+                                                }
+                                                else
+                                                {
+                                                    text_danger.setText("Something went wrong while taking student attendance");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                text_danger.setText("Attendance of this student has already been taken today for this course");
+                                            }
+                                        }
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else
+                            {
+                                text_danger.setText("Internet connection is not available");
+                            }
                         }
                     });
 
-                //sending msg
-                    String msgReply = messageFromClient + ": Received";
+                //sending msg/data to client(student)
+                    String msgReply = "Received";
                     dataOutputStream.writeUTF(msgReply);
                 }
             }
@@ -450,140 +567,5 @@ public class ScanQR extends AppCompatActivity
                 e.printStackTrace();
             }
         }
-    }
-
-//for getting results after scanning the qr code
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-    //getting the content of scanner qr code
-        final IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-    //if some data is coming after scanning
-        if(result != null && result.getContents() != null)
-        {
-            String scanned_result = new Encryption().decrypt(result.getContents());
-
-        //checking if phone if connected to net or not
-            ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-            if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
-            {
-            //device is connected to internet
-                try
-                {
-                    JSONArray js = new JSONArray(scanned_result);
-
-                    String code_student_id = js.getString(0);
-                    String code_course_id = js.getString(1);
-                    String code_timestamps = js.getString(2);
-
-                    if(!code_course_id.equals(course_id_cookie))//if scanned for wrong course
-                    {
-                        text_danger.setText("This QR Code is not associated with the selected course");
-                    }
-                    else
-                    {
-                        //to get current timestamps
-                        Long tsLong = System.currentTimeMillis()/1000;
-                        String current_ts = tsLong.toString();
-
-                        if(Integer.parseInt(current_ts) <= Integer.parseInt(code_timestamps) + 10)
-                        {
-                            //getting the cookie of student present for this courses for today
-                            final String today_students_present_for_this_course = formattedDate + "_date_" + code_course_id + "_course_present_students";
-                            final String today_students_present_for_this_course_cookie = sharedPreferences.getString(today_students_present_for_this_course, "DNE");
-
-                            if(today_students_present_for_this_course_cookie.equals("DNE")) //no any students are present for this course today
-                            {
-                                //inserting this student attendance for this date for today in database
-                                type = "insert_student_attendance_for_course_and_date";
-
-                                String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, code_student_id, code_course_id).get());
-                                if(insert_student_attendance_for_course_and_dateResult.equals("1"))
-                                {
-                                    //creating cookie of students present today for this course and adding this student in the cookie
-                                    String students_present = code_student_id + "!";
-                                    editor.putString(today_students_present_for_this_course, students_present);
-                                    editor.apply();
-
-                                    //increasing the no of students counter
-                                    String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
-                                    int new_c = Integer.parseInt(c) + 1;
-
-                                    editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
-                                    editor.apply();
-
-                                    present_counter.setText("Present Students Counter: " + new_c);
-
-                                    //reloading this activity
-                                    finish();
-                                    startActivity(getIntent());
-                                }
-                                else
-                                {
-                                    text_danger.setText("Something went wrong while taking student attendance");
-                                }
-                            }
-                            else //some students are present for this course today
-                            {
-                                if(!today_students_present_for_this_course_cookie.contains(code_student_id + "!")) //if this student attendance has not been taken for this course for today
-                                {
-                                    //inserting this student attendance for this date for today in database
-                                    type = "insert_student_attendance_for_course_and_date";
-
-                                    String insert_student_attendance_for_course_and_dateResult = (new DatabaseActions().execute(type, code_student_id, code_course_id).get());
-                                    if(insert_student_attendance_for_course_and_dateResult.equals("1"))
-                                    {
-                                        //including this student attendance in the cookie
-                                        String students_present = today_students_present_for_this_course_cookie + code_student_id + "!";
-                                        editor.putString(today_students_present_for_this_course, students_present);
-                                        editor.apply();
-
-                                    //increasing the no of students counter
-                                        String c = sharedPreferences.getString(no_of_students_present_today_cookie_name, "0");
-                                        int new_c = Integer.parseInt(c) + 1;
-
-                                        editor.putString(no_of_students_present_today_cookie_name, Integer.toString(new_c));
-                                        editor.apply();
-
-                                        present_counter.setText("Present Students Counter: " + new_c);
-
-                                    //reloading this activity
-                                        finish();
-                                        startActivity(getIntent());
-                                    }
-                                    else
-                                    {
-                                        text_danger.setText("Something went wrong while taking student attendance");
-                                    }
-                                }
-                                else
-                                {
-                                    text_danger.setText("Attendance of this student has already been taken today for this course");
-                                }
-                            }
-                        }
-                        else
-                        {
-                            text_danger.setText("Student QR Code has been expired. It must be scanned within 15 seconds from time of generation");
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-            else
-            {
-                text_danger.setText("Internet connection is not available");
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
