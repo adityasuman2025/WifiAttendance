@@ -53,7 +53,7 @@
         android:textSize="40px"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:text="A MNgo Creation\nDeveloper: Aditya Suman"
+        android:text=""
         android:padding="20px" />
 
 </RelativeLayout>
