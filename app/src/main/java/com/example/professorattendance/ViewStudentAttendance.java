@@ -1,9 +1,14 @@
 package com.example.professorattendance;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +37,8 @@ public class ViewStudentAttendance extends AppCompatActivity
     TextView courseCode;
     TextView text;
 
+    Button exportBtn;
+
     String user_id_cookie;
     String course_id_cookie;
 
@@ -42,6 +50,8 @@ public class ViewStudentAttendance extends AppCompatActivity
 
     ListView studentAttendanceLV;
 
+    private static final int REQUEST_PERMISSION_CODE = 1000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -50,8 +60,8 @@ public class ViewStudentAttendance extends AppCompatActivity
 
         courseCode = findViewById(R.id.courseCode);
         text = findViewById(R.id.text);
+        exportBtn = findViewById(R.id.exportBtn);
         studentAttendanceLV = findViewById(R.id.studentAttendanceLV);
-
 
         //getting values from cookie
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
@@ -68,13 +78,63 @@ public class ViewStudentAttendance extends AppCompatActivity
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
         {
+        //checking permission to write in external storage
+            if(checkPermissionFromDevice())
+            {
+            //on clicking to export to csv button
+                exportBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        type= "export_student_attendance_into_csv";
+                        try
+                        {
+                            String export_student_attendance_into_csvResult = (new DatabaseActions().execute(type, course_id_cookie).get());
+
+                            if(export_student_attendance_into_csvResult.equals("0"))
+                            {
+                                text.setText("Something went wrong while exporting csv");
+                            }
+                            else if(export_student_attendance_into_csvResult.equals("-1"))
+                            {
+                                text.setText("Database error");
+                            }
+                            else if(export_student_attendance_into_csvResult.equals("1")) //all is fine //file successfully exported in server
+                            {
+
+                            }
+                            else
+                            {
+                                text.setText(export_student_attendance_into_csvResult);
+                            }
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+            else
+            {
+                requestPermission();
+
+                exportBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(ViewStudentAttendance.this, "Please allow storage permission and try to export again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+        //for showing the attendance details in the app
             try
             {
             //to get count of classes for a course
                 type= "get_course_class_count";
                 String get_course_class_count_result = (new DatabaseActions().execute(type, course_id_cookie).get());
 
-                if(get_course_class_count_result != "0" && get_course_class_count_result != "-1" && get_course_class_count_result != "Something went wrong")
+                if(!get_course_class_count_result.equals("0") && !get_course_class_count_result.equals("-1") && !get_course_class_count_result.equals("Something went wrong"))
                 {
                     no_of_classes = Float.parseFloat(get_course_class_count_result);
                 }
@@ -184,4 +244,45 @@ public class ViewStudentAttendance extends AppCompatActivity
         }
     }
 
+//on requesting permission
+    private void requestPermission()
+    {
+        ActivityCompat.requestPermissions(this, new String[]
+        {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO,
+        }, REQUEST_PERMISSION_CODE);
+    }
+
+//for asking for permission
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode)
+        {
+            case REQUEST_PERMISSION_CODE:
+            {
+            //restarting app
+                finish();
+                startActivity(getIntent());
+
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT);
+                }
+                else
+                {
+                    Toast.makeText(this, "Permission Not Granted", Toast.LENGTH_SHORT);
+                }
+            }
+            break;
+        }
+    }
+
+//for checking permission
+    private boolean checkPermissionFromDevice()
+    {
+        int write_external_storage_result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        return (write_external_storage_result == PackageManager.PERMISSION_GRANTED);
+    }
 }

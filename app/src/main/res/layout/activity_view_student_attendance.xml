@@ -23,6 +23,14 @@
         android:textSize="45px"
         />
 
+    <Button
+        android:id="@+id/exportBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20px"
+        android:layout_gravity="center_horizontal"
+        android:text="export to csv"/>
+
     <ListView
         android:id="@+id/studentAttendanceLV"
         android:layout_width="match_parent"
