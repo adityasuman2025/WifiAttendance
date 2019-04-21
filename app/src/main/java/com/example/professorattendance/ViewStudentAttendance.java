@@ -124,7 +124,7 @@ public class ViewStudentAttendance extends AppCompatActivity
                                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
                             //set the local destination for download file to a path within the application's external files directory
-                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"downloadfileName");
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,downloadedFileName);
                                 request.setMimeType("*/*");
                                 downloadManager.enqueue(request);
                             }
