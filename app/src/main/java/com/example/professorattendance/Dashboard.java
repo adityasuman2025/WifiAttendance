@@ -17,18 +17,20 @@ public class Dashboard extends AppCompatActivity implements BottomNavigationView
     {
         super.onPause();
 
-        ActivityManager activityManager = (ActivityManager) getApplicationContext()
-                .getSystemService(Context.ACTIVITY_SERVICE);
-
-        activityManager.moveTaskToFront(getTaskId(), 0);
+    //to prevent reorder app button
+//        ActivityManager activityManager = (ActivityManager) getApplicationContext()
+//                .getSystemService(Context.ACTIVITY_SERVICE);
+//
+//        activityManager.moveTaskToFront(getTaskId(), 0);
+        
     }
 
-    //to prevent going back from current window
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-            return false;
-    }
+    //to prevent going back from app
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event)
+//    {
+//            return false;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

@@ -1,11 +1,14 @@
 package com.example.professorattendance;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -68,7 +71,7 @@ public class ViewStudentAttendance extends AppCompatActivity
         editor = sharedPreferences.edit();
 
         user_id_cookie = sharedPreferences.getString("user_id", "DNE");
-        String course_code_cookie = sharedPreferences.getString("course_code", "");
+        final String course_code_cookie = sharedPreferences.getString("course_code", "");
         course_id_cookie = sharedPreferences.getString("course_id", "DNE");
 
         courseCode.setText(course_code_cookie);
@@ -101,7 +104,29 @@ public class ViewStudentAttendance extends AppCompatActivity
                             }
                             else if(export_student_attendance_into_csvResult.equals("1")) //all is fine //file successfully exported in server
                             {
+                                String downloadFromUrl = "http://mngo.in/qr_attendance/exports/" + course_id_cookie + ".csv";
+                                String downloadedFileName = course_code_cookie + "_attendance_data.csv";
 
+                            // Create request for android download manager
+                                Uri uri= Uri.parse(downloadFromUrl);
+
+                                DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                                DownloadManager.Request request = new DownloadManager.Request(uri);
+
+                                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI |
+                                        DownloadManager.Request.NETWORK_MOBILE);
+
+                            // set title and description
+                                request.setTitle(downloadedFileName);
+                                request.setDescription("Android Data download using DownloadManager.");
+
+                                request.allowScanningByMediaScanner();
+                                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+                            //set the local destination for download file to a path within the application's external files directory
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"downloadfileName");
+                                request.setMimeType("*/*");
+                                downloadManager.enqueue(request);
                             }
                             else
                             {
@@ -263,7 +288,6 @@ public class ViewStudentAttendance extends AppCompatActivity
             {
             //restarting app
                 finish();
-                startActivity(getIntent());
 
                 if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
